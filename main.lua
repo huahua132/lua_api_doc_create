@@ -142,12 +142,12 @@ local function check_create_markdown(file_name, file_path)
             end
 
             mk_file:write(sformat("## %s\n", line))
-            mk_file:write(sformat("描述: %s\n", api_info.desc))
-            mk_file:write(sformat("参数\n"))
+            mk_file:write(sformat("**描述**\n\n%s\n", api_info.desc))
+            mk_file:write(sformat("**参数**\n"))
             for i = 1, #api_info.params do
                 mk_file:write(sformat("* %s\n", api_info.params[i]))
             end
-            mk_file:write(sformat("返回值\n"))
+            mk_file:write(sformat("**\n返回值**\n"))
             for i = 1, #api_info.returns do
                 mk_file:write(sformat("* %s\n", api_info.returns[i]))
             end
