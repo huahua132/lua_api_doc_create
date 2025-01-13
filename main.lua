@@ -1,3 +1,4 @@
+---@diagnostic disable: need-check-nil, undefined-field
 local ARGV = {...}
 local target_dir = assert(ARGV[1])                  --目标目录
 local out_dir = ARGV[2] or "./out"                  --输出目录
@@ -103,10 +104,10 @@ local STATE_TYPE = {
     content = 2,    --写内容状态
 }
 
-local CONTENT = "--@content"
-local DESC = "--@desc"
-local PAREAM = "--@param"
-local RETURN = "--@return"
+local CONTENT = "---#content"
+local DESC = "---#desc"
+local PAREAM = "---@param"
+local RETURN = "---@return"
 
 --创建mark down
 local function check_create_markdown(file_name, file_path)
@@ -117,7 +118,7 @@ local function check_create_markdown(file_name, file_path)
 
     --查找头
     local function find_head(line)
-        if sfind(line, "@API", nil, true) then  --API头标记
+        if sfind(line, "#API", nil, true) then  --API头标记
             local _,e = sfind(file_path, target_dir, nil, true)
             local out_path = path_join(out_dir, file_path:sub(e + 1))
             local b = sfind(out_path, file_name, nil, true)
@@ -156,22 +157,24 @@ local function check_create_markdown(file_name, file_path)
             api_info.params = {}
             api_info.returns = {}
         else
-            local opt = smatch(line, "@(%a+)")
-            if not opt then
-                return 
-            end
-            if opt == "content" then --文本内容
-                local content = line:sub(CONTENT:len() + 2)
-                mk_file:write(content .. '\n')
-            elseif opt == "desc" then
+            if sfind(line, "#desc", nil, true) then
                 local desc = line:sub(DESC:len() + 2)
                 api_info.desc = desc
-            elseif opt == "param" then
-                local param = line:sub(PAREAM:len() + 2)
-                tinsert(api_info.params, param)
-            elseif opt == "return" then
-                local str = line:sub(RETURN:len() + 2)
-                tinsert(api_info.returns, str)
+            elseif sfind(line, "#content", nil, true) then
+                local content = line:sub(CONTENT:len() + 2)
+                mk_file:write(content .. '\n')
+            else
+                local opt = smatch(line, "@(%a+)")
+                if not opt then
+                    return 
+                end
+                if opt == "param" then
+                    local param = line:sub(PAREAM:len() + 2)
+                    tinsert(api_info.params, param)
+                elseif opt == "return" then
+                    local str = line:sub(RETURN:len() + 2)
+                    tinsert(api_info.returns, str)
+                end
             end
         end
     end
