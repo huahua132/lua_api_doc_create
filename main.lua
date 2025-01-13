@@ -148,7 +148,7 @@ local function check_create_markdown(file_name, file_path)
             for i = 1, #api_info.params do
                 mk_file:write(sformat("* %s\n", api_info.params[i]))
             end
-            mk_file:write(sformat("**\n返回值**\n"))
+            mk_file:write(sformat("\n**返回值**\n"))
             for i = 1, #api_info.returns do
                 mk_file:write(sformat("* %s\n", api_info.returns[i]))
             end
